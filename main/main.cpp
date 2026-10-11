@@ -5,6 +5,8 @@
 #include "freertos/task.h"
 #include "esp_timer.h"
 #include "esp_random.h"
+#include "esp_log.h"
+#include "mood.hpp"
 
 
 bool blinking =false;
@@ -46,7 +48,7 @@ void drawEyeShape(ssd1306_handle_t disp, int x, int y, int w, int h,float blink,
     if (actualH > 10) {
         int pupilRadius = 6;
         int maxShiftX = 3;
-        int maxShiftY = 5;
+        int maxShiftY = 8;
         int pupilCenterX = x + radius + (int)(pupilX * maxShiftX);
         int pupilCenterY = topY + actualH / 2 + (int)(pupilY * maxShiftY);
         drawfilledcircle(disp, pupilCenterX, pupilCenterY, pupilRadius);
@@ -57,8 +59,17 @@ void drawmouth(ssd1306_handle_t disp,int x, int y, int w,int h){
     ssd1306_draw_rect(disp,x,y,w,h,true);
 }
 
+static Idlemood idlemood;
+static Happymood happymood;
+static Suprisedmood suprised;
+static Sleepymood sleepy;
+
+static Mood* currentmood = &sleepy;
+
 extern "C" void app_main(void)
 {
+    ESP_LOGI("mood","Starting in mood: %s", currentmood->name());
+
     i2c_master_bus_config_t bus_cfg = {};
     bus_cfg.i2c_port = I2C_NUM_0;
     bus_cfg.sda_io_num = GPIO_NUM_32;
@@ -90,7 +101,7 @@ extern "C" void app_main(void)
         if(!blinking && now> nextblinkat){
             blinking = true;
             blinkstart= now;
-            nextblinkat= now+2000+(esp_random()%3000);
+            nextblinkat= now+currentmood->blinkInterval();
         }
 
         float blink=0.0f;
@@ -109,7 +120,7 @@ extern "C" void app_main(void)
 
         if(now>nextglanceat){
             targetx= ((int)(esp_random()%201)-100)/100.0f;
-            targety= ((int)(esp_random()%201)-100)/100.0f*0.5f;
+            targety= ((int)(esp_random()%201)-100)/100.0f*currentmood->pupilRange()+currentmood->pupilbias();
             nextglanceat= now+1000+(esp_random()%2000);
         }
         pupilx+=(targetx-pupilx)*0.08f;
