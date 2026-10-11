@@ -53,6 +53,10 @@ void drawEyeShape(ssd1306_handle_t disp, int x, int y, int w, int h,float blink,
     }
 }
 
+void drawmouth(ssd1306_handle_t disp,int x, int y, int w,int h){
+    ssd1306_draw_rect(disp,x,y,w,h,true);
+}
+
 extern "C" void app_main(void)
 {
     i2c_master_bus_config_t bus_cfg = {};
@@ -114,6 +118,7 @@ extern "C" void app_main(void)
         ssd1306_clear(disp);
         drawEyeShape(disp, 30, 17, 20, 30, blink, pupilx, pupily);
         drawEyeShape(disp, 78, 17, 20, 30, blinkright, pupilx, pupily);
+        drawmouth(disp,54,55,25,6);
         ssd1306_display(disp);
 
         vTaskDelay(pdMS_TO_TICKS(16));
