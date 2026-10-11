@@ -5,6 +5,10 @@ A procedurally-rendered idle eye animation running on an ESP32 with a
 The eyes blink at random intervals and glance around the screen. No bitmap
 frames are stored, every pixel is computed at runtime.
 
+## Demo
+<img width="185" height="172" alt="blink_eye" src="https://github.com/user-attachments/assets/96222a28-5c93-4b3f-a50d-71d87738638b" />
+
+
 ## Features
 
 - Capsule-shaped eyes composed from circles + rectangles
